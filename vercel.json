@@ -4,11 +4,5 @@
     "api/**/*.ts": {
       "runtime": "@vercel/node@3.0.21"
     }
-  },
-  "env": {
-    "DB_HOST": "@db_host",
-    "DB_USER": "@db_user",
-    "DB_NAME": "@db_name",
-    "DB_PASS": "@db_pass"
   }
 }
