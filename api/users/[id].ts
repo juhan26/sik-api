@@ -1,14 +1,31 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node"
 
-// Mock data storage (same as in index.ts - in production this would be shared via database)
+// Mock users data (same as index.ts - in production this would be shared via database)
 const users = [
-  { id: 1, name: "John Doe", email: "john@example.com", createdAt: "2024-01-01T00:00:00Z" },
-  { id: 2, name: "Jane Smith", email: "jane@example.com", createdAt: "2024-01-02T00:00:00Z" },
-  { id: 3, name: "Bob Johnson", email: "bob@example.com", createdAt: "2024-01-03T00:00:00Z" },
+  {
+    id: 1,
+    name: "John Doe",
+    email: "john@example.com",
+    role: "admin",
+    createdAt: "2024-01-01T00:00:00Z",
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    email: "jane@example.com",
+    role: "user",
+    createdAt: "2024-01-02T00:00:00Z",
+  },
+  {
+    id: 3,
+    name: "Bob Johnson",
+    email: "bob@example.com",
+    role: "user",
+    createdAt: "2024-01-03T00:00:00Z",
+  },
 ]
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Set CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*")
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
@@ -24,7 +41,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (isNaN(userId)) {
       return res.status(400).json({
         success: false,
-        error: "Invalid user ID",
+        error: "Invalid user ID format",
       })
     }
 
@@ -45,7 +62,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         })
 
       case "PUT":
-        const { name, email } = req.body
+        const { name, email, role } = req.body
         const userIndex = users.findIndex((u) => u.id === userId)
 
         if (userIndex === -1) {
@@ -55,9 +72,30 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           })
         }
 
-        // Update user
+        // Email validation if email is being updated
+        if (email) {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+          if (!emailRegex.test(email)) {
+            return res.status(400).json({
+              success: false,
+              error: "Invalid email format",
+            })
+          }
+
+          // Check if email already exists (excluding current user)
+          const existingUser = users.find((user) => user.email === email && user.id !== userId)
+          if (existingUser) {
+            return res.status(409).json({
+              success: false,
+              error: "User with this email already exists",
+            })
+          }
+        }
+
+        // Update user fields
         if (name) users[userIndex].name = name
         if (email) users[userIndex].email = email
+        if (role) users[userIndex].role = role
 
         return res.status(200).json({
           success: true,
@@ -74,10 +112,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           })
         }
 
+        const deletedUser = users[deleteIndex]
         users.splice(deleteIndex, 1)
 
         return res.status(200).json({
           success: true,
+          data: deletedUser,
           message: "User deleted successfully",
         })
 

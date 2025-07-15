@@ -1,15 +1,15 @@
 {
   "name": "sik-api",
   "version": "1.0.0",
-  "description": "",
+  "description": "SIK API - Serverless Functions",
   "keywords": [],
   "license": "ISC",
   "author": "",
   "main": "index.js",
   "scripts": {
-    "build": "echo 'No build needed'",
+    "build": "echo 'No build needed for serverless functions'",
     "dev": "vercel dev",
-    "start": "echo 'Serverless function'"
+    "start": "echo 'Serverless function - no start needed'"
   },
   "dependencies": {
     "class-variance-authority": "^0.7.1",
@@ -29,5 +29,8 @@
     "@vercel/node": "^3.0.21",
     "postcss": "^8.5",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }

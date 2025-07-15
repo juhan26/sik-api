@@ -13,15 +13,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     return res.status(200).json({
       success: true,
-      message: "SIK API is running successfully! 🚀",
+      message: "🚀 SIK API is running successfully!",
       version: "1.0.0",
       timestamp: new Date().toISOString(),
+      nodeVersion: process.version,
       endpoints: {
         users: "/api/users",
         config: "/api/config",
         health: "/api/health",
       },
-      environment: process.env.NODE_ENV || "development",
+      environment: process.env.NODE_ENV || "production",
     })
   } catch (error) {
     console.error("API Error:", error)

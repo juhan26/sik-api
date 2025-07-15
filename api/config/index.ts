@@ -2,22 +2,46 @@ import type { VercelRequest, VercelResponse } from "@vercel/node"
 
 // Mock config data
 const configs = [
-  { id: 1, key: "app_name", value: "SIK API", description: "Application name", createdAt: "2024-01-01T00:00:00Z" },
-  { id: 2, key: "version", value: "1.0.0", description: "API version", createdAt: "2024-01-01T00:00:00Z" },
+  {
+    id: 1,
+    key: "app_name",
+    value: "SIK API",
+    description: "Application name",
+    category: "general",
+    createdAt: "2024-01-01T00:00:00Z",
+  },
+  {
+    id: 2,
+    key: "version",
+    value: "1.0.0",
+    description: "API version",
+    category: "general",
+    createdAt: "2024-01-01T00:00:00Z",
+  },
   {
     id: 3,
     key: "maintenance_mode",
     value: "false",
     description: "Maintenance mode status",
+    category: "system",
+    createdAt: "2024-01-01T00:00:00Z",
+  },
+  {
+    id: 4,
+    key: "max_upload_size",
+    value: "10MB",
+    description: "Maximum file upload size",
+    category: "system",
     createdAt: "2024-01-01T00:00:00Z",
   },
 ]
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // Set CORS headers
   res.setHeader("Access-Control-Allow-Origin", "*")
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+  const { category, search } = req.query
 
   if (req.method === "OPTIONS") {
     return res.status(200).end()
@@ -26,17 +50,31 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     switch (req.method) {
       case "GET":
+        let filteredConfigs = configs
+
+        if (category) {
+          filteredConfigs = filteredConfigs.filter((config) => config.category === category)
+        }
+
+        if (search) {
+          filteredConfigs = filteredConfigs.filter(
+            (config) =>
+              config.key.toLowerCase().includes((search as string).toLowerCase()) ||
+              config.description.toLowerCase().includes((search as string).toLowerCase()),
+          )
+        }
+
         return res.status(200).json({
           success: true,
-          data: configs,
-          total: configs.length,
+          data: filteredConfigs,
+          total: filteredConfigs.length,
+          categories: [...new Set(configs.map((c) => c.category))],
           message: "Configs retrieved successfully",
         })
 
       case "POST":
-        const { key, value, description } = req.body
+        const { key, value, description = "", configCategory = "general" } = req.body
 
-        // Basic validation
         if (!key || !value) {
           return res.status(400).json({
             success: false,
@@ -53,12 +91,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           })
         }
 
-        // Create new config
         const newConfig = {
           id: Math.max(...configs.map((c) => c.id), 0) + 1,
           key,
           value,
-          description: description || "",
+          description,
+          category: configCategory,
           createdAt: new Date().toISOString(),
         }
 
