@@ -1,6 +1,5 @@
 import { Sequelize } from "sequelize"
 
-// Create connection with proper error handling for serverless
 const sequelize = new Sequelize({
   dialect: "mysql",
   host: process.env.DB_HOST || "localhost",
@@ -9,7 +8,7 @@ const sequelize = new Sequelize({
   database: process.env.DB_NAME || "test",
   logging: false,
   pool: {
-    max: 2, // Reduced for serverless
+    max: 2,
     min: 0,
     acquire: 3000,
     idle: 1000,
