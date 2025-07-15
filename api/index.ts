@@ -11,23 +11,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    switch (req.method) {
-      case "GET":
-        // Mock data for now to test deployment
-        return res.status(200).json({
-          success: true,
-          data: [{ id: 1, name: "Test User", email: "test@example.com" }],
-        })
-      case "POST":
-        const { name, email } = req.body
-        return res.status(201).json({
-          success: true,
-          data: { id: Date.now(), name, email },
-          message: "User created successfully",
-        })
-      default:
-        return res.status(405).json({ error: "Method not allowed" })
-    }
+    return res.status(200).json({
+      success: true,
+      message: "SIK API is running",
+      version: "1.0.0",
+      endpoints: {
+        users: "/api/users",
+        config: "/api/config",
+      },
+    })
   } catch (error) {
     console.error("API Error:", error)
     return res.status(500).json({
