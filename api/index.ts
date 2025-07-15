@@ -1,13 +1,12 @@
 import express from 'express';
-import configRoutes from '../src/routes/configRoutes';
+import serverless from 'serverless-http';
 import userRoutes from '../src/routes/userRoutes';
+import configRoutes from '../src/routes/configRoutes';
 
 const app = express();
-
 app.use(express.json());
 
-app.use('/configs', configRoutes);
-app.use('/users', userRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/config', configRoutes);
 
-// Vercel expects a default export of the handler
-export default app; 
+export default serverless(app);
