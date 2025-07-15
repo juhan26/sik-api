@@ -13,16 +13,19 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use('/api/users', userRoutes);
 app.use('/api/config', configRoutes);
 
+// Untuk Vercel, jangan gunakan app.listen di sini
+// Untuk development lokal, bisa gunakan kode di bawah ini:
+//
+// const PORT = 3000;
+// sequelize.authenticate()
+//   .then(() => {
+//     console.log('Database connected!');
+//     app.listen(PORT, () => {
+//       console.log(`Server running on port ${PORT}`);
+//     });
+//   })
+//   .catch((err) => {
+//     console.error('Unable to connect to the database:', err);
+//   });
 
-const PORT = 3000;
-
-sequelize.authenticate()
-  .then(() => {
-    console.log('Database connected!');
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  })
-  .catch((err) => {
-    console.error('Unable to connect to the database:', err);
-  });
+export default app;
