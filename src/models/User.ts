@@ -1,28 +1,34 @@
-import { DataTypes, Model } from 'sequelize';
-import sequelize from './index';
+import { DataTypes, Model } from "sequelize"
+import { sequelize } from "./index"
 
-class User extends Model {
-  public id!: number;
-  public nama!: string;
-  // Tambahkan field lain sesuai kebutuhan
+export class User extends Model {
+  public id!: number
+  public name!: string
+  public email!: string
+  public readonly createdAt!: Date
+  public readonly updatedAt!: Date
 }
 
-User.init({
-  id: {
-    type: DataTypes.INTEGER,
-    autoIncrement: true,
-    primaryKey: true,
+User.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+    },
   },
-  nama: {
-    type: DataTypes.STRING,
-    allowNull: false,
+  {
+    sequelize,
+    modelName: "User",
+    tableName: "users",
   },
-  // Tambahkan field lain sesuai kebutuhan
-}, {
-  sequelize,
-  modelName: 'User',
-  tableName: 'users', // sesuaikan dengan nama tabel di DB
-  timestamps: false, // ubah jika tabel ada created_at/updated_at
-});
-
-export default User; 
+)

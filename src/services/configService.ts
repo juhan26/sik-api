@@ -1,26 +1,19 @@
-import Config from '../models/Config';
+import { Config } from "../models/Config"
 
-export const getAllConfigs = async () => {
-  return await Config.findAll();
-};
+export const ConfigService = {
+  async getAllConfigs() {
+    try {
+      return await Config.findAll()
+    } catch (error) {
+      throw new Error("Failed to fetch configs from database")
+    }
+  },
 
-export const getConfigById = async (id: number) => {
-  return await Config.findByPk(id);
-};
-
-export const createConfig = async (data: any) => {
-  return await Config.create(data);
-};
-
-export const updateConfig = async (id: number, data: any) => {
-  const config = await Config.findByPk(id);
-  if (!config) return null;
-  return await config.update(data);
-};
-
-export const deleteConfig = async (id: number) => {
-  const config = await Config.findByPk(id);
-  if (!config) return null;
-  await config.destroy();
-  return true;
-}; 
+  async createConfig(configData: any) {
+    try {
+      return await Config.create(configData)
+    } catch (error) {
+      throw new Error("Failed to create config in database")
+    }
+  },
+}

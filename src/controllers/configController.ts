@@ -1,50 +1,38 @@
-import { Request, Response } from 'express';
-import * as configService from '../services/configService';
+import type { VercelRequest, VercelResponse } from "@vercel/node"
+import { ConfigService } from "../services/configService"
 
-export const getAllConfigs = async (req: Request, res: Response) => {
-  try {
-    const configs = await configService.getAllConfigs();
-    res.json(configs);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
+export const getConfigController = {
+  async getAll(req: VercelRequest, res: VercelResponse) {
+    try {
+      const configs = await ConfigService.getAllConfigs()
+      return res.status(200).json({
+        success: true,
+        data: configs,
+      })
+    } catch (error) {
+      console.error("Get all configs error:", error)
+      return res.status(500).json({
+        success: false,
+        error: "Failed to fetch configs",
+      })
+    }
+  },
 
-export const getConfigById = async (req: Request, res: Response) => {
-  try {
-    const config = await configService.getConfigById(Number(req.params.id));
-    if (!config) return res.status(404).json({ error: 'Config not found' });
-    res.json(config);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
+  async create(req: VercelRequest, res: VercelResponse) {
+    try {
+      const configData = req.body
+      const newConfig = await ConfigService.createConfig(configData)
 
-export const createConfig = async (req: Request, res: Response) => {
-  try {
-    const config = await configService.createConfig(req.body);
-    res.status(201).json(config);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-export const updateConfig = async (req: Request, res: Response) => {
-  try {
-    const config = await configService.updateConfig(Number(req.params.id), req.body);
-    if (!config) return res.status(404).json({ error: 'Config not found' });
-    res.json(config);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-
-export const deleteConfig = async (req: Request, res: Response) => {
-  try {
-    const deleted = await configService.deleteConfig(Number(req.params.id));
-    if (!deleted) return res.status(404).json({ error: 'Config not found' });
-    res.json({ message: 'Config deleted' });
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-}; 
+      return res.status(201).json({
+        success: true,
+        data: newConfig,
+      })
+    } catch (error) {
+      console.error("Create config error:", error)
+      return res.status(500).json({
+        success: false,
+        error: "Failed to create config",
+      })
+    }
+  },
+}
